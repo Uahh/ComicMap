@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+import json
 import config
-from models.model import ip
+from models.model import IP
 from flask import Flask
 from flask import request
 from flask import render_template
@@ -17,13 +18,28 @@ if __name__ == '__main__':
     print('Waiting......')
 
     # 主要逻辑视图函数
-    @app.route('/')
+    @app.route('/', methods=["GET", "POST"])
+    @app.route('/index', methods=["GET", "POST"])
     def index():
-        temp = ip()
         # city = temp.from_ip_to_city(request.remote_addr)
-        city = temp.from_ip_to_city('1.192.119.149')
-
-        return render_template('index.html', user_ip=city[1])
+        city, _ = IP.from_ip_to_city('59.49.184.209')
+        if '省' in city or '市' in city or '县' in city or '地区' in city:
+            if '省' in city and '市' in city:
+                begin = city.find('省') + 1
+                end = city.find('市') + 1
+                city = city[begin:end]
+            elif '省' in city and '县' in city:
+                begin = city.find('省') + 1
+                end = city.find('县') + 1
+                city = city[begin:end]
+        # if request.method == "POST":
+        #     jsonData = request.get_json()
+        #     print(jsonData)
+        #     return {
+        #         'response': 'I am the response'
+        #     }
+        # return render_template('index.html')
+        return render_template('board.html', result_json=json.dumps({'a': IP.city_gps[city]}))
 
     @app.route('/error/')
     def error():
