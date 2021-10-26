@@ -32,17 +32,17 @@ if __name__ == '__main__':
                 begin = city.find('省') + 1
                 end = city.find('县') + 1
                 city = city[begin:end]
-        # if request.method == "POST":
-        #     jsonData = request.get_json()
-        #     print(jsonData)
-        #     return {
-        #         'response': 'I am the response'
-        #     }
-        # return render_template('index.html')
         return render_template('board.html', result_json=json.dumps({'a': IP.city_gps[city]}))
+
+    @app.route('/get_json', methods=["GET", "POST"])
+    def get_json():
+        with open(r'data/test.json', encoding='utf-8') as f:
+            test_gps = json.load(f)
+            f.close()
+        return test_gps
 
     @app.route('/error/')
     def error():
         return '404 not found'
 
-    app.run(host='0.0.0.0', threaded=True, port=5000)
+    app.run(host='0.0.0.0', debug=True, port=173)

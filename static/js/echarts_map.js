@@ -1,8 +1,6 @@
 var dataCount = 0;
 var CHUNK_COUNT = 230;
-// var chartDom = document.getElementById('main');
 var myChart = echarts.init(document.getElementById('main'));
-//https://blog.openstreetmap.org/2012/04/01/bulk-gps-point-data/
 function fetchData(idx){
     if (idx >= CHUNK_COUNT){
       return;
@@ -15,14 +13,6 @@ function fetchData(idx){
     xhr.responseType = 'arraybuffer';
     xhr.onload = function (e){
         var data = new Float32Array(3710);
-//        data = [98.986404, 30.301999,
-//              98.992788, 30.284671,
-//              98.976531, 30.260165,
-//              98.981092, 30.253656,
-//              98.981226, 30.235071,
-//              98.999207, 30.220594,
-//              99.000722, 30.216161,
-//              98.990861, 30.200213,];
         var obj = eval('({{result_json|safe }})')
         data = obj['a']
         myChart.appendData({
