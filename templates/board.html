@@ -46,7 +46,7 @@
                     type: 'scatterGL',
                     progressive: 1e6,
                     coordinateSystem: 'geo',
-                    symbolSize: 5,
+                    symbolSize: 1,
                     zoomScale: 0.002,
                     blendMode: 'lighter',
                     large: true,
@@ -63,14 +63,6 @@
                 ]
             };
             myChart.setOption(option);
-<!--            var gps;-->
-<!--            function getClient(){-->
-<!--                $.get("http://192.168.31.11:173/get_json",function(data, status){-->
-<!--                    alert("数据: " + data + "\n状态: " + status);-->
-<!--                    gps = data;-->
-<!--                });-->
-<!--            }-->
-
             var httpRequest = new XMLHttpRequest();
             httpRequest.open('GET', 'http://192.168.31.11:173/get_json', true);
             httpRequest.send();
