@@ -13,75 +13,97 @@
         <div id="main" style="height: 100%"></div>
         <script type="text/javascript">
             var myChart = echarts.init(document.getElementById('main'));
-            var option = {
-                backgroundColor: '#000',
-                title: {
-                    text: 'ComicMap',
-                    left: 'center',
-                    textStyle: {
-                        color: '#fff'
-                    }
-                },
-                geo: {
-                    map: 'china',
-                    roam: true,
-                    label: {
-                        emphasis: {
-                            show: false
-                        }
-                    },
-                    silent: true,
-                    itemStyle: {
-                        normal: {
-                            areaColor: '#323c48',
-                            borderColor: '#111'
-                        },
-                    emphasis: {
-                        areaColor: '#2a333d'
-                        }
-                    }
-                },
-                series: [{
-                    name: '弱',
-                    type: 'scatterGL',
-                    progressive: 1e6,
-                    coordinateSystem: 'geo',
-                    symbolSize: 1,
-                    zoomScale: 0.002,
-                    blendMode: 'lighter',
-                    large: true,
-                    itemStyle: {
-                        color: 'rgb(20, 15, 2)'
-                    },
-                    postEffect: {
-                        enable: true
-                    },
-                    silent: true,
-                    dimensions: ['lng', 'lat'],
-                    data: new Float32Array()
-                    }
-                ]
-            };
-            myChart.setOption(option);
-            var httpRequest = new XMLHttpRequest();
-            httpRequest.open('GET', 'http://192.168.31.11:173/get_json', true);
-            httpRequest.send();
-            httpRequest.onreadystatechange = function () {
-                if (httpRequest.readyState == 4 && httpRequest.status == 200) {
-                    var json = eval("("+httpRequest.responseText+")");
-<!--                    console.log(json);-->
-                    myChart.appendData({
-                        seriesIndex: 0,
-                        data: json['gps']
-                    });
+            $.get('http://192.168.31.11:173/get_line_json',
+            function(data) {
+                myChart.hideLoading();
+                function getAirportCoord(idx) {
+                    return [data.airports[idx][3], data.airports[idx][4]];
                 }
-            };
-
-<!--            var data = new Float32Array(4);-->
-<!--            var obj = eval('({{result_json|safe }})');-->
-<!--            data = obj['a'];-->
-
-
+                var routes = data.routes.map(function(airline) {
+                    return [getAirportCoord(airline[1]), getAirportCoord(airline[2])];
+                });
+                myChart.setOption(option = {
+                    backgroundColor: '#000',
+                    title: {
+                        text: 'ComicMap',
+                        left: 'center',
+                        textStyle: {
+                            color: '#fff'
+                        }
+                    },
+                    tooltip: {
+                        formatter: function(param) {
+                            var route = data.routes[param.dataIndex];
+                            return (data.airports[route[1]][1] + ' > ' + data.airports[route[2]][1]);
+                        }
+                    },
+                    geo: {
+                        map: 'china',
+                        roam: true,
+                        label: {
+                            emphasis: {
+                                show: false
+                            }
+                        },
+                        silent: true,
+                        left: 0,
+                        right: 0,
+                        silent: true,
+                        roam: true,
+                        itemStyle: {
+                            normal: {
+                                borderColor: '#003',
+                                color: '#005'
+                            }
+                        }
+                    },
+                    series: [{
+                        name: '弱',
+                        type: 'scatterGL',
+                        progressive: 1e6,
+                        coordinateSystem: 'geo',
+                        symbolSize: 3,
+                        zoomScale: 0.002,
+                        blendMode: 'lighter',
+                        large: true,
+                        itemStyle: {
+                            color: 'rgb(255, 255, 255)'
+<!--                            color: 'rgb(20, 15, 2)'-->
+                        },
+                        postEffect: {
+                            enable: true
+                        },
+                        silent: true,
+                        dimensions: ['lng', 'lat'],
+                        data: new Float32Array()
+                    },
+                    {
+                        type: 'lines',
+                        coordinateSystem: 'geo',
+                        data: routes,
+                        large: true,
+                        largeThreshold: 100,
+                        lineStyle: {
+                            opacity: 0.05,
+                            width: 0.5,
+                            curveness: 0.3
+                        },
+                        blendMode: 'lighter'
+                    }]
+                });
+                var httpRequest1 = new XMLHttpRequest();
+                httpRequest1.open('GET', 'http://192.168.31.11:173/get_json', true);
+                httpRequest1.send();
+                httpRequest1.onreadystatechange = function() {
+                    if (httpRequest1.readyState == 4 && httpRequest1.status == 200) {
+                        var json = eval("(" + httpRequest1.responseText + ")");
+                        myChart.appendData({
+                            seriesIndex: 0,
+                            data: json['gps']
+                        });
+                    }
+                };
+            })
         </script>
     </body>
 </html>

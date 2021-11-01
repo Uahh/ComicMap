@@ -50,12 +50,20 @@ if __name__ == '__main__':
                 city = city[begin:end]
         return render_template('board.html', result_json=json.dumps({'a': IP.city_gps[city]}))
 
+    @app.route('/2', methods=["GET", "POST"])
+    def index2():
+        return render_template('index2.html')
+
     @app.route('/get_json', methods=["GET", "POST"])
     def get_json():
         with open(r'data/test.json', encoding='utf-8') as f:
             test_gps = json.load(f)
             f.close()
         return test_gps
+
+    @app.route('/get_line_json', methods=["GET", "POST"])
+    def get_line_json():
+        return IP.line_json
 
     @app.route('/error/')
     def error():
