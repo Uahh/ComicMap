@@ -7,7 +7,6 @@
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script>
         <script type="text/javascript" src="../static/js/china_map.js"></script>
-<!--        <script type="text/javascript" src="../static/js/echarts_map.js"></script>-->
     </head>
     <body style="height: 100%; margin: 0">
         <div id="main" style="height: 100%"></div>
@@ -17,10 +16,10 @@
             function(data) {
                 myChart.hideLoading();
                 function getAirportCoord(idx) {
-                    return [data.airports[idx][3], data.airports[idx][4]];
+                    return [data.cities[idx][1], data.cities[idx][2]];
                 }
                 var routes = data.routes.map(function(airline) {
-                    return [getAirportCoord(airline[1]), getAirportCoord(airline[2])];
+                    return [getAirportCoord(airline[0]), getAirportCoord(airline[1])];
                 });
                 myChart.setOption(option = {
                     backgroundColor: '#000',
@@ -34,7 +33,7 @@
                     tooltip: {
                         formatter: function(param) {
                             var route = data.routes[param.dataIndex];
-                            return (data.airports[route[1]][1] + ' > ' + data.airports[route[2]][1]);
+                            return (data.cities[route[0]][0] + ' > ' + data.cities[route[1]][0]);
                         }
                     },
                     geo: {
@@ -84,7 +83,7 @@
                         large: true,
                         largeThreshold: 100,
                         lineStyle: {
-                            opacity: 0.05,
+                            opacity: 1,
                             width: 0.5,
                             curveness: 0.3
                         },
@@ -92,7 +91,7 @@
                     }]
                 });
                 var httpRequest1 = new XMLHttpRequest();
-                httpRequest1.open('GET', 'http://192.168.31.11:173/get_json', true);
+                httpRequest1.open('GET', 'http://192.168.31.11:173/get_point_json', true);
                 httpRequest1.send();
                 httpRequest1.onreadystatechange = function() {
                     if (httpRequest1.readyState == 4 && httpRequest1.status == 200) {

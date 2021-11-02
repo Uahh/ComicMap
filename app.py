@@ -54,16 +54,19 @@ if __name__ == '__main__':
     def index2():
         return render_template('index2.html')
 
-    @app.route('/get_json', methods=["GET", "POST"])
+    @app.route('/get_point_json', methods=["GET", "POST"])
     def get_json():
-        with open(r'data/test.json', encoding='utf-8') as f:
+        with open(r'data/test_point.json', encoding='utf-8') as f:
             test_gps = json.load(f)
             f.close()
         return test_gps
 
     @app.route('/get_line_json', methods=["GET", "POST"])
     def get_line_json():
-        return IP.line_json
+        with open(r'data/test_line.json', encoding='utf-8') as f:
+            test_line = json.load(f)
+            f.close()
+        return IP.city_line
 
     @app.route('/error/')
     def error():
