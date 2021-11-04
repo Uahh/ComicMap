@@ -14,15 +14,8 @@
             var myChart = echarts.init(document.getElementById('main'));
             $.get('http://192.168.31.11:173/get_line_json',
             function(data) {
-                myChart.hideLoading();
-                function getAirportCoord(idx) {
-                    return [data.cities[idx][1], data.cities[idx][2]];
-                }
-                var routes = data.routes.map(function(airline) {
-                    return [getAirportCoord(airline[0]), getAirportCoord(airline[1])];
-                });
                 myChart.setOption(option = {
-                    backgroundColor: '#000',
+                    backgroundColor: '#4B0082',
                     title: {
                         text: 'ComicMap',
                         left: 'center',
@@ -51,23 +44,22 @@
                         roam: true,
                         itemStyle: {
                             normal: {
-                                borderColor: '#003',
-                                color: '#005'
+                                borderColor: '#FFFAF0',
+                                color: '#F4A460'
                             }
                         }
                     },
                     series: [{
-                        name: '弱',
                         type: 'scatterGL',
                         progressive: 1e6,
                         coordinateSystem: 'geo',
-                        symbolSize: 3,
+                        symbol: 'circle',
+                        symbolSize: 1,
                         zoomScale: 0.002,
                         blendMode: 'lighter',
                         large: true,
                         itemStyle: {
-                            color: 'rgb(255, 255, 255)'
-<!--                            color: 'rgb(20, 15, 2)'-->
+                            color: 'rgb(175, 238, 238)'
                         },
                         postEffect: {
                             enable: true
@@ -79,26 +71,46 @@
                     {
                         type: 'lines',
                         coordinateSystem: 'geo',
-                        data: routes,
                         large: true,
                         largeThreshold: 100,
                         lineStyle: {
-                            opacity: 1,
+                            opacity: 0.7,
                             width: 0.5,
                             curveness: 0.3
                         },
                         blendMode: 'lighter'
                     }]
                 });
-                var httpRequest1 = new XMLHttpRequest();
-                httpRequest1.open('GET', 'http://192.168.31.11:173/get_point_json', true);
-                httpRequest1.send();
-                httpRequest1.onreadystatechange = function() {
-                    if (httpRequest1.readyState == 4 && httpRequest1.status == 200) {
-                        var json = eval("(" + httpRequest1.responseText + ")");
+
+                var httpRequest = new XMLHttpRequest();
+                httpRequest.open('GET', 'http://192.168.31.11:173/get_point_json', true);
+                httpRequest.send();
+                httpRequest.onreadystatechange = function() {
+                    if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+                        var json = eval("(" + httpRequest.responseText + ")");
                         myChart.appendData({
                             seriesIndex: 0,
                             data: json['gps']
+                        });
+                    }
+                };
+
+                var httpRequest_line = new XMLHttpRequest();
+                httpRequest_line.open('GET', 'http://192.168.31.11:173/get_line_json', true);
+                httpRequest_line.send();
+                httpRequest_line.onreadystatechange = function() {
+                    if (httpRequest_line.readyState == 4 && httpRequest_line.status == 200) {
+                        myChart.hideLoading();
+                        function getAirportCoord(idx) {
+                            console.log(data.cities);
+                            return [data.cities[idx][1], data.cities[idx][2]];
+                        }
+                            var routes = data.routes.map(function(Underline) {
+                            return [getAirportCoord(Underline[0]), getAirportCoord(Underline[1])];
+                        });
+                        myChart.appendData({
+                            seriesIndex: 1,
+                            data: routes
                         });
                     }
                 };
