@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import config
+from models import functions
 from models.model import IP
 from flask import Flask
 from flask import request

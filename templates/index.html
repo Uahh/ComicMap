@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html style="height: 100%">
+    <head>
+        <meta charset="utf-8">
+        <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script>
+        <script type="text/javascript" src="../static/js/china_map.js"></script>
+    </head>
+    <body style="height: 100%; margin: 0">
+        <div id="main" style="height: 100%"></div>
+        <script type="text/javascript">
+            var myChart = echarts.init(document.getElementById('main'));
+            var ROOT_PATH =
+            'https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples';
+            var option;
+            myChart.showLoading();
+            $.get('http://192.168.31.11:173/get_line_json', function (data) {
+              myChart.hideLoading();
+              function getAirportCoord(idx) {
+                return [data.airports[idx][3], data.airports[idx][4]];
+              }
+              var routes = data.routes.map(function (airline) {
+                return [getAirportCoord(airline[1]), getAirportCoord(airline[2])];
+              });
+              myChart.setOption(
+                (option = {
+                  title: {
+                    text: 'World Flights',
+                    left: 'center',
+                    textStyle: {
+                      color: '#eee'
+                    }
+                  },
+                  backgroundColor: '#003',
+                  tooltip: {
+                    formatter: function (param) {
+                      var route = data.routes[param.dataIndex];
+                      return (
+                        data.airports[route[1]][1] + ' > ' + data.airports[route[2]][1]
+                      );
+                    },
+                    position: ['50%', '50%']
+                  },
+                  geo: {
+                    map: 'china',
+                    left: 0,
+                    right: 0,
+                    silent: true,
+                    roam: true,
+                    itemStyle: {
+                      borderColor: '#003',
+                      color: '#005'
+                    }
+                  },
+                  series: [
+                    {
+                      type: 'lines',
+                      coordinateSystem: 'geo',
+                      data: routes,
+                      large: true,
+                      largeThreshold: 100,
+                      lineStyle: {
+                        opacity: 0.05,
+                        width: 0.5,
+                        curveness: 0.3
+                      },
+                      blendMode: 'lighter'
+                    }
+                  ]
+                })
+              );
+            });
+
+            option && myChart.setOption(option);
+        </script>
+    </body>
+</html>
