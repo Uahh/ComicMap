@@ -49,8 +49,7 @@ if __name__ == '__main__':
                 begin = 0
                 end = city.find('市') + 1
                 city = city[begin:end]
-        num = IP.city_index[city]
-        return render_template('board.html', result_json=json.dumps({'a': [IP.city_gps['cities'][num][0], IP.city_gps['cities'][num][1]]}))
+        return render_template('board.html', result_json=json.dumps({'a': city}))
 
     @app.route('/2', methods=["GET", "POST"])
     def index2():
