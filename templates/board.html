@@ -11,37 +11,31 @@
     <body style="height: 100%; margin: 0">
         <div id="main" style="height: 100%"></div>
         <script type="text/javascript">
-            const data2 = [
-              { name: '海', value: 9 },
-              { name: '海门', value: 9 }
-            ];
-            const geoCoordMap = {
-              海: [121.15, 31.89],
-              海门: [121.15, 32.89],
-            };
-            const convertData = function (temp) {
-                var res = [];
-                for (var i = 0; i < temp.length; i++) {
-                    var geoCoord = geoCoordMap[temp[i].name];
-                    if (geoCoord) {
-                        res.push({
-                            name: temp[i].name,
-                            value: geoCoord.concat(temp[i].value)
-                        });
-                    }
-                }
-                return res;
-            };
             var myChart = echarts.init(document.getElementById('main'));
             $.get('http://192.168.31.11:173/get_line_json',
             function(data) {
+                const convertData = function () {
+                    var res = [];
+                    for (var i = 0; i < data.cities.length; i++) {
+                        var geoCoord = [data.cities[i][1], data.cities[i][2]];
+                        if (geoCoord) {
+                            res.push({
+                                name: data.cities[i][0],
+                                value: [geoCoord[0], geoCoord[1], data.cities[i][4]]
+                            });
+                        }
+                    }
+                    return res;
+                };
+                console.log(convertData());
                 myChart.hideLoading();
                 function getCityCoord(idx) {
                     return [data.cities[idx][1], data.cities[idx][2]];
                 }
-                var routes = data.routes.map(function(line) {
-                    return [getCityCoord(line[0]), getCityCoord(line[1])];
+                var routes = data.cities.map(function(line) {
+                    return [getCityCoord(line[3]), getCityCoord(7)];
                 });
+                console.log(data)
                 myChart.setOption(option = {
                     backgroundColor: '#4B0082',
                     title: {
@@ -80,7 +74,7 @@
                         largeThreshold: 100,
                         lineStyle: {
                             opacity: 0.7,
-                            width: 1,
+                            width: 0.3,
                             curveness: 0.3
                         },
                         blendMode: 'lighter',
@@ -89,7 +83,7 @@
                         name: 'pm2.5',
                         type: 'scatter',
                         coordinateSystem: 'geo',
-                        data: convertData(data2),
+                        data: convertData(),
                         symbolSize: function (val) {
                             return val[2] / 10;
                         },
@@ -112,9 +106,9 @@
                         type: 'effectScatter',
                         coordinateSystem: 'geo',
                         data: convertData(
-                            data2.sort(function (a, b) {
-                                return b.value - a.value;
-                            }).slice(0, 6)
+<!--                            data2.sort(function (a, b) {-->
+<!--                                return b.value - a.value;-->
+<!--                            }).slice(0, 6)-->
                         ),
                         symbolSize: function (val) {
                             return val[2] / 10;

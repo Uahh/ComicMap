@@ -49,7 +49,7 @@ if __name__ == '__main__':
                 begin = 0
                 end = city.find('市') + 1
                 city = city[begin:end]
-        return render_template('board.html', result_json=json.dumps({'a': city}))
+        return render_template('index.html', result_json=json.dumps({'a': city}))
 
     @app.route('/2', methods=["GET", "POST"])
     def index2():
@@ -64,7 +64,14 @@ if __name__ == '__main__':
 
     @app.route('/get_line_json', methods=["GET", "POST"])
     def get_line_json():
-        with open(r'data/city_line.json', encoding='utf-8') as f:
+        with open(r'data/city_line2.json', encoding='utf-8') as f:
+            test_line = json.load(f)
+            f.close()
+        return test_line
+
+    @app.route('/geo_china_json', methods=["GET", "POST"])
+    def geo_china_json():
+        with open(r'data/chinageo.json', encoding='utf-8') as f:
             test_line = json.load(f)
             f.close()
         return test_line
