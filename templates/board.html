@@ -12,37 +12,25 @@
         <div id="main" style="height: 100%"></div>
         <script type="text/javascript">
             var myChart = echarts.init(document.getElementById('main'));
-            $.get('http://192.168.31.11:173/get_line_json',
+            $.get('http://192.168.31.11:173/get_city_table',
             function(data) {
-                const convertData = function () {
-                    var res = [];
-                    for (var i = 0; i < data.cities.length; i++) {
-                        var geoCoord = [data.cities[i][1], data.cities[i][2]];
-                        if (geoCoord) {
-                            res.push({
-                                name: data.cities[i][0],
-                                value: [geoCoord[0], geoCoord[1], data.cities[i][4]]
-                            });
-                        }
-                    }
-                    return res;
-                };
-                console.log(convertData());
                 myChart.hideLoading();
-                function getCityCoord(idx) {
-                    return [data.cities[idx][1], data.cities[idx][2]];
+                var routes = new Array();
+                for(let i = 0; i < data.cities.length; i++)
+                {
+                    for(let j = 0; j < data.cities[i][1]; j++)
+                    {
+                        routes.push([[data.cities[i][4], data.cities[i][5]], [data.cities[7][4], data.cities[7][5]]])
+                    }
                 }
-                var routes = data.cities.map(function(line) {
-                    return [getCityCoord(line[3]), getCityCoord(7)];
-                });
-                console.log(data)
+                console.log(routes)
                 myChart.setOption(option = {
-                    backgroundColor: '#4B0082',
+                    backgroundColor: '#77787b',
                     title: {
                         text: 'ComicMap',
                         left: 'center',
                         textStyle: {
-                            color: '#fff'
+                            color: '#000'
                         }
                     },
                     geo: {
@@ -61,7 +49,7 @@
                         itemStyle: {
                             normal: {
                                 borderColor: '#FFFAF0',
-                                color: '#F4A460'
+                                color: '#2A2A2A'
                             }
                         }
                     },
@@ -73,66 +61,12 @@
                         large: true,
                         largeThreshold: 100,
                         lineStyle: {
-                            opacity: 0.7,
-                            width: 0.3,
-                            curveness: 0.3
+                            opacity: 0.05,
+                            width: 0.5,
+                            curveness: 0.3,
+                            colorBy: '#f15a22'
                         },
-                        blendMode: 'lighter',
-                    },
-                    {
-                        name: 'pm2.5',
-                        type: 'scatter',
-                        coordinateSystem: 'geo',
-                        data: convertData(),
-                        symbolSize: function (val) {
-                            return val[2] / 10;
-                        },
-                        encode: {
-                            value: 2
-                        },
-                        label: {
-                            formatter: '{b}',
-                            position: 'right',
-                            show: false
-                        },
-                        emphasis: {
-                            label: {
-                              show: true
-                            }
-                        }
-                    },
-                    {
-                        name: 'Top 5',
-                        type: 'effectScatter',
-                        coordinateSystem: 'geo',
-                        data: convertData(
-<!--                            data2.sort(function (a, b) {-->
-<!--                                return b.value - a.value;-->
-<!--                            }).slice(0, 6)-->
-                        ),
-                        symbolSize: function (val) {
-                            return val[2] / 10;
-                        },
-                        encode: {
-                            value: 2
-                        },
-                        showEffectOn: 'render',
-                        rippleEffect: {
-                            brushType: 'stroke'
-                        },
-                        label: {
-                            formatter: '{b}',
-                            position: 'right',
-                            show: true
-                        },
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowColor: '#333'
-                        },
-                        emphasis: {
-                            scale: true
-                        },
-                        zlevel: 1
+                        blendMode: 'lighter'
                     }]
                 });
             })

@@ -25,7 +25,7 @@ def update_city_json():
     with open("data/city_table.json", "w", encoding='utf-8') as f:
         json.dump(ans, f, ensure_ascii=False, sort_keys=True, indent=4)
     print(time.asctime(time.localtime(time.time())))
-    print("Json文件已更新")
+    print("city_table Json文件已更新")
 
 
 def update_province_json():
@@ -49,7 +49,7 @@ def update_province_json():
     with open("data/province_table.json", "w", encoding='utf-8') as f:
         json.dump(res, f, ensure_ascii=False, sort_keys=True, indent=4)
     print(time.asctime(time.localtime(time.time())))
-    print("Json文件已更新")
+    print("province_table Json文件已更新")
 
 
 class SchedulerConfig(object):
@@ -59,14 +59,14 @@ class SchedulerConfig(object):
             'func': '__main__:update_city_json',  # 任务执行程序
             'args': None,  # 执行程序参数
             'trigger': 'interval',  # 任务执行类型，定时器
-            'seconds': 20,  # 任务执行时间，单位秒
+            'seconds': 20  # 任务执行时间，单位秒
         },
         {
-            'id': 'update_province_json',  # 任务id
-            'func': '__main__:update_province_json',  # 任务执行程序
-            'args': None,  # 执行程序参数
-            'trigger': 'interval',  # 任务执行类型，定时器
-            'seconds': 21,  # 任务执行时间，单位秒
+            'id': 'update_province_json',
+            'func': '__main__:update_province_json',
+            'args': None,
+            'trigger': 'interval',
+            'seconds': 21
         }
     ]
 
@@ -107,12 +107,7 @@ def index():
             begin = 0
             end = city.find('市') + 1
             city = city[begin:end]
-    return render_template('index.html', result_json=json.dumps({'a': city}))
-
-
-@app.route('/2', methods=["GET", "POST"])
-def index2():
-    return render_template('index2.html')
+    return render_template('board.html', result_json=json.dumps({'a': city}))
 
 
 @app.route('/get_data', methods=["GET", "POST"])
@@ -121,6 +116,14 @@ def get_data():
         data = json.load(f)
         f.close()
     return json.dumps(data)
+
+
+@app.route('/get_city_table', methods=["GET", "POST"])
+def get_city_table():
+    with open(r'data/city_table.json', encoding='utf-8') as f:
+        data = json.load(f)
+        f.close()
+    return data
 
 
 @app.route('/geo_china_json', methods=["GET", "POST"])
